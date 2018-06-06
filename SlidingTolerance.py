@@ -10,16 +10,26 @@ def T(h, g, x):
     g_sum = sum([U(gi, x) * gi(x)**2 for gi in g])
     return np.sqrt(h_sum + g_sum)
 
-f = lambda x: 4 * x[0] - x[1]**2 - 12
+
+num = 0
+
+def f(x):
+    global num
+    num += 1
+    return (1 - x[0])**2 + 100 * (x[1] - x[0]**2)**2
+
+
+
+#f = lambda x: 4* x[0] - x[1]**2 -12
 h = [
     lambda x: 25 - x[0]**2 - x[1]**2
 ]
 g = [
-    lambda x: 10 * x[0] - x[0]**2 + 10 * x[1] - x[1]**2 - 34,
+    lambda x: 10 * x[0] - x[0]**2 + 18 * x[1] - x[1]**2 - 34,
     lambda x: x[0],
     lambda x: x[1]
 ]
-x_0 = np.array([1, 1])
+x_0 = np.array([2312, 231])
 t = 0.3
 
 
@@ -78,10 +88,9 @@ class SlidingTolerance:
         self.init_curent()
         self.sort_current()
         print(self.x_l, self.x_g, self.x_h)
-        for i in range(300):
+        for i in range(3000):
 
             if self.F[-1] < T(self.h, self.g, self.x_l):
-                print("IF")
                 self.optimal_t()
                 self.x_l = NelderMead(func=lambda x: T(self.h, self.g, x),
                                       x_0=self.x_l,
@@ -90,36 +99,26 @@ class SlidingTolerance:
                                       need_init=True).run()[0]
                 self.sort_current()
             else:
-                print("ELSE")
-                print('+++++++++++++++++++')
-                print(self.x_l, self.x_g, self.x_h )
                 self.x_l, self.x_g, self.x_h = NelderMead(
                         func=self.func,
                         x_0=self.x_l,
                         epsilon=self.F[-1],
                         need_init=True,
-                        t=self.t,
-                        x_l=self.x_l,
-                        x_g=self.x_g,
-                        x_h=self.x_h,
-                        f_l=self.f_l,
-                        f_g=self.f_g,
-                        f_h=self.f_h,
-                        max_iter=1).run()
-                print(self.x_l, self.x_g, self.x_h )
-                print('+++++++++++++++++++')
+                        t = self.t*5,
+                        one_iter=True).run()
                 self.sort_current()
                 
             
-            self.sort_current()
-            print(i, self.x_l, self.x_g, self.x_h)
-
+            self.sort_current()       
             x_mean = np.mean([self.x_l, self.x_g, self.x_h], axis=0)
             theta = np.sqrt(sum((self.x_l - x_mean)**2 +\
                      (self.x_g - x_mean)**2 +\
                      (self.x_h - x_mean)**2)) * (self.m+1) / (self.r + 1)
-            print(theta)
+            print('___________')
+            print(i, self.x_l, self.x_g, self.x_h)
+            print(theta) 
             self.F.append(min(self.F[-1], theta))
+            
             if self.F[-1]<self.epsilon and T(self.h, self.g, self.x_l)<self.F[-1]:
                 break
             

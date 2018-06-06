@@ -17,7 +17,8 @@ class NelderMead:
                  x_h=None,
                  f_l=None,
                  f_g=None,
-                 f_h=None):
+                 f_h=None,
+                 one_iter=False):
         self.func = func
         self.t = t
         self.alpha = alpha
@@ -26,6 +27,8 @@ class NelderMead:
         self.epsilon = epsilon
         self.max_iter = max_iter
         self.need_init = need_init
+        self.one_iter = one_iter
+        
         
         if self.need_init:
         
@@ -120,6 +123,10 @@ class NelderMead:
 
     def run(self):
         self.sort_current()
+        if self.one_iter:
+            self.fit()
+            self.sort_current()
+            return self.x_l, self.x_g, self.x_h
         for i in range(self.max_iter):
             self.fit()
             self.sort_current()
