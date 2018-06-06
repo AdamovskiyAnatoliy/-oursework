@@ -125,6 +125,7 @@ class SlidingTolerance:
     
             
             
+            
 symplex = SlidingTolerance(x_0=x_0, 
                            func=f, 
                            h=h, 
